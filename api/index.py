@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, session , escape
 from flask_cors import CORS, cross_origin
 from flask_session import Session
 import os
@@ -25,6 +25,13 @@ app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
 
 # CORS(app, resources={r"/api/*": {"origins": "*"}})
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
+
+
+@app.route('/')
+def hello():
+    name = request.args.get("name", "World")
+    return f'Hello, {escape(name)} from Flask!'
+
 
 bg_remove_route(app)
 add_bg_route(app)
