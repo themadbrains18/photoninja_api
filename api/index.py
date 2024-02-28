@@ -1,6 +1,6 @@
 # app.py
-from flask import Flask, request, escape
-from flask_cors import CORS 
+from flask import Flask, request, jsonify, session , escape
+from flask_cors import CORS, cross_origin
 from flask_session import Session
 import os
 import secrets
