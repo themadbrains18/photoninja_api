@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 from flask_cors import cross_origin
 
 ALLOWED_EXTENSIONS = {'png', 'webp', 'jpg', 'jpeg', 'gif'}
-UPLOAD_FOLDER = os.path.join(os.getcwd(), 'api', 'uploads')
+UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
 
 def timestampsWithFilename(filename):
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")

@@ -9,7 +9,7 @@ import numpy as np
 from PIL import Image
 
 ALLOWED_EXTENSIONS = {'png', 'webp', 'jpg', 'jpeg', 'gif', 'svg'}
-UPLOAD_FOLDER = os.path.join(os.getcwd(), 'api', 'uploads')
+UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

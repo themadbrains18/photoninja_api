@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask, request, jsonify, session , escape
+from flask import Flask, request, jsonify, session 
 from flask_cors import CORS, cross_origin
 from flask_session import Session
 import os
@@ -15,7 +15,7 @@ from App.Features.enhance import image_enhance_route
 from App.Features.image_convertor import image_convertor_route
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'api', 'uploads')
+app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')
 app.config['SESSION_TYPE'] = 'filesystem'
 app.secret_key = secrets.token_hex(16)
 
@@ -26,21 +26,19 @@ app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
 # CORS(app, resources={r"/api/*": {"origins": "*"}})
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
-
 @app.route('/')
-def hello():
-    name = request.args.get("name", "World")
-    return f'Hello, {escape(name)} from Flask!'
+def hello_world():
+    return 'Hello, World!'
 
 
-bg_remove_route(app)
-add_bg_route(app)
-apply_filter_route(app)
-filter(app)
-compress_route(app)
-compressing(app)
-image_enhance_route(app)
-image_convertor_route(app)
+# bg_remove_route(app)
+# add_bg_route(app)
+# apply_filter_route(app)
+# filter(app)
+# compress_route(app)
+# compressing(app)
+# image_enhance_route(app)
+# image_convertor_route(app)
 
 
 

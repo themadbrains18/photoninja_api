@@ -11,7 +11,7 @@ from flask_cors import cross_origin
 
 
 ALLOWED_EXTENSIONS = {'png', 'webp', 'jpg', 'jpeg', 'gif'}
-UPLOAD_FOLDER = os.path.join(os.getcwd(), 'api', 'uploads')
+UPLOAD_FOLDER = os.path.join(os.getcwd() ,'uploads')
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

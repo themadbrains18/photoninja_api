@@ -1,0 +1,31 @@
+runtime: python39
+
+handlers:
+
+- url: /App
+  static_dir: App
+
+- url: /uploads
+  static_dir: uploads
+
+runtime_config:
+  operating_system: ubuntu
+  python_version: 3.9
+
+# libraries:
+# - name: Flask_Cors
+#   version: 4.0.0
+# - name: numpy
+#   version: "1.26.4"
+# - name: opencv-python-headless
+#   version: "4.9.0.80"
+# - name: Pillow
+#   version: "10.2.0"
+# - name: rembg
+#   version: "2.0.53"
+# - name: setuptools
+#   version: "63.2.0"
+# - name: Werkzeug
+#   version: "3.0.1"
+# - name: Flask-Session
+#   version: "0.5.0"
