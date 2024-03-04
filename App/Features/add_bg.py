@@ -11,7 +11,7 @@ def add_bg_route(app):
     def apply_background():
         background_color = request.form.get('background_color')
         processed_image_path = session.get('bg_removed_img')
-        print(processed_image_path, "=======processed_image_path")
+        
         if processed_image_path:
             original_image = Image.open(processed_image_path)
 
