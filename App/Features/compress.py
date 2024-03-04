@@ -14,7 +14,7 @@ def allowed_file(filename):
 
 def timestampsWithFilename(filename):
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    return f"public/static/{filename}_{timestamp}_tmb.png"
+    return f"static/{filename}_{timestamp}_tmb.png"
 
 def compress_route(app):
     @app.route('/api/upload-compress', methods=['POST'])

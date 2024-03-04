@@ -18,7 +18,7 @@ def allowed_file(filename):
 
 def timestampsWithFilename(filename):
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    return f"public/static/{filename}_{timestamp}_tmb.png"
+    return f"static/{filename}_{timestamp}_tmb.png"
 
 def bgRemovedAndSaveImage(input_path, output_path, alpha_matting=False):
     input_image = Image.open(input_path)

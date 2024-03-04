@@ -10,7 +10,7 @@ UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
 
 def timestampsWithFilename(filename):
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    return f"public/static/{filename}_{timestamp}_tmb.png"
+    return f"static/{filename}_{timestamp}_tmb.png"
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
