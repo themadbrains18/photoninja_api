@@ -24,6 +24,8 @@ server_session = Session(app)
 app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
 
 # CORS(app, resources={r"/api/*": {"origins": "*"}})
+
+CORS(app, resources={r"/static/*": {"origins": "*"}}, supports_credentials=True)
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
 @app.route('/')

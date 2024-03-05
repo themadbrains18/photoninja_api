@@ -22,7 +22,7 @@ def apply_image_enhancer(image_path, factor=1.5):
 
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     filename = f"{secure_filename(image_path)}_enhanced_{timestamp}_tmb.png"
-    output_path = os.path.join('public', 'static', filename)
+    output_path = os.path.join('static', filename)
     
     enhanced_image.save(output_path)
 
