@@ -131,7 +131,7 @@ def apply_filter(file_path, filter_name):
 
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
         filename = f"{secure_filename(file_path)}_{timestamp}_tmb.png"
-        output_path = os.path.join('public', 'static', filename)  
+        output_path = os.path.join('static', filename)  
         original_image.save(output_path)
 
         session['applied-filter'] = output_path

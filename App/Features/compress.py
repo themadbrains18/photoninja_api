@@ -60,7 +60,7 @@ def compressing(app):
                 compressed_filename = f"{filename}_{timestamp}.jpg"
 
                 # Define the path for the compressed image in the 'static' folder
-                compressed_file_path = os.path.join('public', 'static', compressed_filename)
+                compressed_file_path = os.path.join('static', compressed_filename)
 
                 # Compress and save the image
                 cv2.imwrite(compressed_file_path, original_image, [cv2.IMWRITE_JPEG_QUALITY, jpeg_quality])
