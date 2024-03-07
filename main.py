@@ -1,6 +1,6 @@
 # app.py
-from flask import Flask, request, jsonify, session , url_for
-from flask_cors import CORS, cross_origin
+from flask import Flask
+from flask_cors import CORS
 from flask_session import Session
 import os
 import secrets
@@ -35,8 +35,7 @@ def hello_world():
 
 @app.route('/test-image')
 def test_image():
-    return '<img src="static/shutterstock_1148336333_1.jpg_20240304130017_tmb.png" alt="Test Image">'
-
+    return '<img width="400" src="https://images.pexels.com/photos/11035465/pexels-photo-11035465.jpeg">'
 
 bg_remove_route(app)
 add_bg_route(app)

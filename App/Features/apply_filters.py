@@ -144,10 +144,8 @@ def filter(app):
     @app.route('/api/filter', methods=['POST'])
     @cross_origin(supports_credentials=True)
     def apply_filter_image():
-        print("==apply_filter_on_image_route running")
         filter_name = request.form.get('filterName')
         processed_image_path = session.get("imageFilter")
-        print(processed_image_path, "========image_file_path=====")
 
         if not processed_image_path or not os.path.exists(processed_image_path):
             return jsonify({'error': 'Invalid or missing image file'})
