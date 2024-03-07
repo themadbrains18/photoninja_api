@@ -18,17 +18,15 @@ app = Flask(__name__,static_url_path='/static', static_folder='static')
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')
 
 
+# Set the secret key for the Flask app
+app.config['SECRET_KEY'] = secrets.token_hex(32)
+
 # Set the session type to filesystem
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_FILE_DIR'] = os.path.join(app.root_path, 'session_files')
-# app.config['SECRET_KEY'] = 'your-secret-key'
 
 # Ensure the directory for storing sessions exists
 os.makedirs(app.config['SESSION_FILE_DIR'], exist_ok=True)
-
-
-
-
 
 # Initialize Flask-Session
 server_session = Session(app)
@@ -42,7 +40,6 @@ CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 @app.route('/')
 def hello_world():
     return 'Hello, World!'
-
 
 @app.route('/test-image')
 def test_image():
