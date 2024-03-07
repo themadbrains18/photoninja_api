@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask
+from flask import Flask, session
 from flask_cors import CORS
 from flask_session import Session
 import os
