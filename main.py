@@ -16,26 +16,17 @@ from App.Features.compress import compress_route
 from App.Features.compress import compressing
 from App.Features.enhance import image_enhance_route
 from App.Features.image_convertor import image_convertor_route
+from App.Features.profilepic_maker import profile_maker
 
 app = Flask(__name__,static_url_path='/static', static_folder='static') 
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')
 
-
-# Set the secret key for the Flask app
-app.config['SECRET_KEY'] = secrets.token_hex(32)
-
-app.config['SESSION_TYPE'] = 'redis'
-app.config['SESSION_REDIS'] = redis.from_url('redis://default:7035658f8b314deba49306cbf7821d5e@relaxed-gelding-41419.upstash.io:41419')
-
-
-# Ensure the directory for storing sessions exists
-# os.makedirs(app.config['SESSION_FILE_DIR'], exist_ok=True)
+app.config['SESSION_TYPE'] = 'filesystem'
+app.secret_key = secrets.token_hex(16)
 
 # Initialize Flask-Session
 server_session = Session(app)
 app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
-
-# CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 CORS(app, resources={r"/static/*": {"origins": "*"}}, supports_credentials=True)
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
@@ -56,6 +47,7 @@ compress_route(app)
 compressing(app)
 image_enhance_route(app)
 image_convertor_route(app)
+profile_maker(app)
 
 
 def delete_old_files(folder_path, max_age_hours=1):

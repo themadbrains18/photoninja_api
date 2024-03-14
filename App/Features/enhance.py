@@ -7,7 +7,6 @@ from datetime import datetime
 from PIL import Image
 
 
-
 ALLOWED_EXTENSIONS = {'png', 'webp', 'jpg', 'jpeg', 'gif'}
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
 

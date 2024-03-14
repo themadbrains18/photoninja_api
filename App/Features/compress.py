@@ -39,7 +39,6 @@ def compress_route(app):
 
         return jsonify({'error': 'Invalid request'})
 
-
 def compressing(app):
     @app.route('/api/compressing', methods=['POST'])
     @cross_origin(supports_credentials=True)
