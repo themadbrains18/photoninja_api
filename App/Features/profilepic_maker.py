@@ -1,6 +1,6 @@
 from PIL import Image
 from rembg import remove
-from flask import jsonify, request
+from flask import jsonify, request, send_from_directory
 from flask_cors import cross_origin
 import os
 from datetime import datetime
@@ -35,20 +35,22 @@ def profile_maker(app):
         
         # Process the uploaded image
         output_filename = process_image(filepath)
+        
+        if output_filename is None:
+            return jsonify({'error': 'Failed to process image'})
+        
         output_url = f"{request.host_url}static/{output_filename}"
         
         return jsonify({'filename': output_url})
 
 # Function to process the uploaded image
 def process_image(filepath):
-    # Detect face and crop to passport size
-    face_image = detect_and_crop_passport(filepath)
     
-    if face_image is None:
+    if filepath is None:
         return None
     
     # Remove background from the cropped image
-    with open(face_image, "rb") as f_in:
+    with open(filepath, "rb") as f_in:
         with open("output.png", "wb") as f_out:
             f_out.write(remove(f_in.read()))
 
@@ -76,41 +78,9 @@ def process_image(filepath):
     
     return processed_filename
 
-# Function to detect face and crop to passport size
-def detect_and_crop_passport(image_path):
-    # Load the image
-    image = cv2.imread(image_path)
-    
-    # Load the pre-trained face detector
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-    # Convert the image to grayscale
-    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-    # Detect faces in the grayscale image
-    faces = face_cascade.detectMultiScale(gray_image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-    
-    if len(faces) == 0:
-        return None
-    
-    # Assuming only one face is detected, crop the image based on the first face
-    x, y, w, h = faces[0]
-    
-    # Increase the crop size to include the shoulders
-    shoulder_margin = 200  # Adjust this value as needed
-    y_start = max(0, y - shoulder_margin)
-    y_end = min(image.shape[0], y + h + shoulder_margin)
-    x_start = max(0, x - shoulder_margin)
-    x_end = min(image.shape[1], x + w + shoulder_margin)
-    
-    cropped_face = image[y_start:y_end, x_start:x_end]
-    
-    # Resize the cropped face image to the desired passport size
-    # resized_face = cv2.resize(cropped_face, (400, 500))
-    
-    # Save the cropped and resized face image
-    output_filename = f"cropped_{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
-    output_filepath = os.path.join(UPLOAD_FOLDER, output_filename)
-    cv2.imwrite(output_filepath, cropped_face)
-    
-    return output_filepath
+# Route to serve static files (processed images)
+def serve_static_file(app):
+    @app.route('/static/<path:filename>')
+    def serve_file(filename):
+        return send_from_directory('static', filename)
