@@ -54,7 +54,7 @@ def profile_maker_routes(app):
         file.save(filepath)
         
         page = int(request.args.get('page', 1))  # Get the page number from the query parameters
-        num_backgrounds_per_page = 10  # Number of backgrounds to process per page
+        num_backgrounds_per_page = 8  # Number of backgrounds to process per page
         start_index = (page - 1) * num_backgrounds_per_page
         end_index = page * num_backgrounds_per_page
         
