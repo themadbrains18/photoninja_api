@@ -1,4 +1,4 @@
-# app.py
+# main.py
 from flask import Flask, session
 from flask_cors import CORS
 from flask_session import Session
@@ -16,9 +16,10 @@ from App.Features.compress import compress_route
 from App.Features.compress import compressing
 from App.Features.enhance import image_enhance_route
 from App.Features.image_convertor import image_convertor_route
-from App.Features.profilepic_maker import profile_maker
 
-app = Flask(__name__,static_url_path='/static', static_folder='static') 
+from App.Features.profilepic_maker import profile_maker_routes  # Import profile_maker function
+
+app = Flask(__name__, static_url_path='/static', static_folder='static')
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')
 
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -47,8 +48,9 @@ compress_route(app)
 compressing(app)
 image_enhance_route(app)
 image_convertor_route(app)
-profile_maker(app)
 
+# Integrate profile_maker functionality into the Flask application
+profile_maker_routes(app)
 
 def delete_old_files(folder_path, max_age_hours=1):
     current_time = datetime.now()
@@ -60,11 +62,9 @@ def delete_old_files(folder_path, max_age_hours=1):
             os.remove(file_path)
             print(f"Deleted: {file_path}")
 
-
 # Run the deletion for both folders
 delete_old_files(os.path.join(os.getcwd(), 'static'))
 delete_old_files(os.path.join(os.getcwd(), 'uploads'))
-
 
 if __name__ == '__main__':
     app.run(debug=True, port="5000", host="0.0.0.0")
