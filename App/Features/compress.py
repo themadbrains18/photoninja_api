@@ -32,16 +32,12 @@ def compress_route(app):
             file_path = os.path.join(UPLOAD_FOLDER, filename)
             file.save(file_path)
             
-            # Compression process
-            print('before')
+            print("session store before")
             session['original_img_for_compression'] = file_path
-
-            print('After')
-
+            print("session store after")
             return jsonify({'filename': filename})
 
         return jsonify({'error': 'Invalid request'})
-
 
 def compressing(app):
     @app.route('/api/compressing', methods=['POST'])
@@ -50,7 +46,7 @@ def compressing(app):
         quality = request.form.get('quality')
 
         session_file_path = session.get('original_img_for_compression')
-        
+        print(session_file_path,"sfajksdfhlsdfhlk")
         if session_file_path:
             original_image = cv2.imread(session_file_path, cv2.IMREAD_COLOR)
 

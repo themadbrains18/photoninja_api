@@ -1,9 +1,12 @@
-# app.py
-from flask import Flask
+# main.py
+from flask import Flask, session
 from flask_cors import CORS
 from flask_session import Session
 import os
 import secrets
+from datetime import datetime, timedelta
+import glob
+import redis
 
 from App.Features.bg_remove import bg_remove_route
 from App.Features.add_bg import add_bg_route
@@ -14,8 +17,11 @@ from App.Features.compress import compressing
 from App.Features.enhance import image_enhance_route
 from App.Features.image_convertor import image_convertor_route
 
-app = Flask(__name__,static_url_path='/static', static_folder='static') 
+from App.Features.profilepic_maker import profile_maker_routes  # Import profile_maker function
+
+app = Flask(__name__, static_url_path='/static', static_folder='static')
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')
+
 app.config['SESSION_TYPE'] = 'filesystem'
 app.secret_key = secrets.token_hex(16)
 
@@ -23,15 +29,12 @@ app.secret_key = secrets.token_hex(16)
 server_session = Session(app)
 app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
 
-# CORS(app, resources={r"/api/*": {"origins": "*"}})
-
 CORS(app, resources={r"/static/*": {"origins": "*"}}, supports_credentials=True)
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
 @app.route('/')
 def hello_world():
     return 'Hello, World!'
-
 
 @app.route('/test-image')
 def test_image():
@@ -46,7 +49,22 @@ compressing(app)
 image_enhance_route(app)
 image_convertor_route(app)
 
+# Integrate profile_maker functionality into the Flask application
+profile_maker_routes(app)
 
+def delete_old_files(folder_path, max_age_hours=1):
+    current_time = datetime.now()
+    max_age = timedelta(hours=max_age_hours)
+
+    for file_path in glob.glob(os.path.join(folder_path, '*')):
+        file_creation_time = datetime.fromtimestamp(os.path.getctime(file_path))
+        if current_time - file_creation_time > max_age:
+            os.remove(file_path)
+            print(f"Deleted: {file_path}")
+
+# Run the deletion for both folders
+delete_old_files(os.path.join(os.getcwd(), 'static'))
+delete_old_files(os.path.join(os.getcwd(), 'uploads'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port="5000", host="0.0.0.0")
