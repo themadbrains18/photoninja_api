@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageDraw
 from rembg import remove
 from flask import jsonify, request, send_from_directory
 from flask_cors import cross_origin
@@ -13,6 +13,15 @@ STATIC_FOLDER = os.path.join(os.getcwd(), 'static')
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def apply_ellipse_mask(image):
+    width, height = image.size
+    mask = Image.new("L", (width, height), 0)
+    draw = ImageDraw.Draw(mask)
+    draw.ellipse((0, 0, width, height), fill=255)
+    result = Image.new("RGBA", (width, height))
+    result.paste(image, (0, 0), mask)
+    return result
 
 def process_image(filepath, background_filenames, start_index, end_index):
     processed_filenames = []
@@ -29,7 +38,11 @@ def process_image(filepath, background_filenames, start_index, end_index):
         
         processed_filename = f"processed_{datetime.now().strftime('%Y%m%d%H%M%S')}.png"
         processed_filepath = os.path.join(STATIC_FOLDER, processed_filename)
-        background_image.save(processed_filepath)
+        
+        # Apply circular mask
+        circular_image = apply_ellipse_mask(background_image)
+        
+        circular_image.save(processed_filepath)
         
         processed_filenames.append(processed_filename)
         os.remove("output.png")
