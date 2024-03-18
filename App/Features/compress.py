@@ -32,7 +32,12 @@ def compress_route(app):
             file_path = os.path.join(UPLOAD_FOLDER, filename)
             file.save(file_path)
             
+            # Compression process
+            print('before')
             session['original_img_for_compression'] = file_path
+
+            print('After')
+
             return jsonify({'filename': filename})
 
         return jsonify({'error': 'Invalid request'})
