@@ -1,12 +1,17 @@
 # main.py
-from flask import Flask, session
-from flask_cors import CORS
+from flask import Flask, session, jsonify
+from flask_cors import CORS, cross_origin
 from flask_session import Session
 import os
 import secrets
 from datetime import datetime, timedelta
 import glob
 import redis
+from datetime import timedelta
+
+
+# @cross_origin(supports_credentials=True)
+
 
 from App.Features.bg_remove import bg_remove_route
 from App.Features.add_bg import add_bg_route
@@ -22,23 +27,30 @@ from App.Features.profilepic_maker import profile_maker_routes  # Import profile
 app = Flask(__name__, static_url_path='/static', static_folder='static')
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')
 
-app.config['SESSION_TYPE'] = 'filesystem'
-app.secret_key = secrets.token_hex(16)
+SECRET_KEY = "changeme"
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+
+SESSION_TYPE = 'filesystem'
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SECURE'] = False
+
+app.config.from_object(__name__)
+
+# app.secret_key = 'super secret key'
+# app.config['SESSION_TYPE'] = 'filesystem'
 
 # Initialize Flask-Session
-server_session = Session(app)
-app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
+Session(app)
+# app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
+# app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=False)
 
 CORS(app, resources={r"/static/*": {"origins": "*"}}, supports_credentials=True)
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
 @app.route('/')
 def hello_world():
-    return 'Hello, World!'
+    return jsonify({'session': session.sid})
 
-@app.route('/test-image')
-def test_image():
-    return '<img width="400" src="https://images.pexels.com/photos/11035465/pexels-photo-11035465.jpeg">'
 
 bg_remove_route(app)
 add_bg_route(app)
@@ -67,4 +79,4 @@ delete_old_files(os.path.join(os.getcwd(), 'static'))
 delete_old_files(os.path.join(os.getcwd(), 'uploads'))
 
 if __name__ == '__main__':
-    app.run(debug=True, port="5000", host="0.0.0.0")
+    app.run(debug=True, port="7001", host="0.0.0.0")
