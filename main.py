@@ -6,7 +6,6 @@ import os
 import secrets
 from datetime import datetime, timedelta
 import glob
-import redis
 
 from App.Features.bg_remove import bg_remove_route
 from App.Features.add_bg import add_bg_route
@@ -15,7 +14,7 @@ from App.Features.apply_filters import filter
 from App.Features.compress import compress_route
 from App.Features.compress import compressing
 from App.Features.enhance import image_enhance_route
-from App.Features.image_convertor import image_convertor_route
+from App.Features.image_convertor import convert_image_route
 
 from App.Features.profilepic_maker import profile_maker_routes  # Import profile_maker function
 
@@ -47,7 +46,7 @@ filter(app)
 compress_route(app)
 compressing(app)
 image_enhance_route(app)
-image_convertor_route(app)
+convert_image_route(app)
 
 # Integrate profile_maker functionality into the Flask application
 profile_maker_routes(app)

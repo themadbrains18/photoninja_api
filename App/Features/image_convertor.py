@@ -1,63 +1,45 @@
-from flask import Flask, request, jsonify, session, send_file
-from flask_cors import CORS, cross_origin
-from flask_session import Session
-import os
-from datetime import datetime
+from flask import Flask, request, jsonify
 from werkzeug.utils import secure_filename
-import cv2
-import numpy as np
+import os
 from PIL import Image
 
-ALLOWED_EXTENSIONS = {'png', 'webp', 'jpg', 'jpeg', 'gif', 'svg'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'svg'}
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
+STATIC_FOLDER = os.path.join(os.getcwd(), 'static')
 
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def timestampsWithFilename(filename):
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    return f"static/{filename}_{timestamp}_tmb.png"
-
-def convert_image(file_path, output_format):
-    original_image = cv2.imread(file_path)
-    
-    # Convert color channels from BGR to RGB
-    original_image_rgb = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
-    
-    # Convert the image to the desired format
-    if output_format == 'png':
-        output_image_path = file_path.replace('.jpg', '_converted.png')
-        cv2.imwrite(output_image_path, original_image)
-    elif output_format == 'webp':
-        output_image_path = file_path.replace('.jpg', '_converted.webp')
-        cv2.imwrite(output_image_path, original_image, [cv2.IMWRITE_WEBP_QUALITY, 100])
-    elif output_format == 'svg':
-        # Convert to grayscale
-        gray_image = cv2.cvtColor(original_image_rgb, cv2.COLOR_RGB2GRAY)
-        
-        # Use a threshold to create a binary image
-        _, binary_image = cv2.threshold(gray_image, 128, 255, cv2.THRESH_BINARY)
-        
-        # Save the binary image as SVG
-        output_image_path = file_path.replace('.jpg', '_converted.svg')
-        Image.fromarray(binary_image).save(output_image_path)
-    
-    return output_image_path
-
-def image_convertor_route(app):
-    @app.route('/api/upload', methods=['POST'])
-    @cross_origin(supports_credentials=True)
-    def upload_file_for_image_converter():
+def convert_image_route(app):
+    @app.route('/api/image_convertor', methods=['POST'])
+    def convert_image():
         if 'file' not in request.files:
-            return jsonify({'error': 'No file part'})
+            return jsonify({'error': 'No file part'}), 400
 
         file = request.files['file']
-        if file.filename == '' or not allowed_file(file.filename):
-            return jsonify({'error': 'Invalid file'})
 
-        # Save the uploaded file to the UPLOAD_FOLDER
-        file_path = os.path.join(UPLOAD_FOLDER, secure_filename(file.filename))
-        file.save(file_path)
+        if file.filename == '':
+            return jsonify({'error': 'No selected file'}), 400
 
-        session['imageFilter'] = file_path
-        return jsonify({'message': 'File uploaded successfully'})
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(UPLOAD_FOLDER, filename))
+            
+            output_format = request.form.get('output_format', '').lower()
+            if output_format not in ALLOWED_EXTENSIONS:
+                return jsonify({'error': 'Invalid output format'}), 400
+            
+            output_path = os.path.join(STATIC_FOLDER, f'converted_{filename}.{output_format}')
+            
+            try:
+                image = Image.open(os.path.join(UPLOAD_FOLDER, filename))
+                image.save(output_path)
+                converted_image_url = f"/static/converted_{filename}.{output_format}"
+                print(converted_image_url, "aaaaluuu")
+                return jsonify({'converted_image_url': converted_image_url}), 200
+            except Exception as e:
+                return jsonify({'error': f'Error converting image: {str(e)}'}), 500
+        else:
+            return jsonify({'error': 'Unsupported file format'}), 400
+
