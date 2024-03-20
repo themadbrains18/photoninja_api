@@ -4,28 +4,22 @@ from pathlib import Path
 import aspose.words as aw
 from PIL import Image
 
-doc = aw.Document()
-
-builder = aw.DocumentBuilder(doc)
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'svg'}
+# Set up file upload and static folders
 UPLOAD_FOLDER = Path.cwd() / 'uploads'
 STATIC_FOLDER = Path.cwd() / 'static'
 
+# Define allowed file extensions
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'svg'}
+
+# Function to check if file extension is allowed
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def convert_to_svg(image_path, output_path):
-    # Create a new document
     doc = aw.Document()
-
-    # Get the DocumentBuilder
     builder = aw.DocumentBuilder(doc)
-
-    # Load the image into the document
-    builder.insert_image(str(image_path))  # Convert WindowsPath to string
-    print(str(output_path), aw.SaveFormat.SVG,"aaalu")  # Convert WindowsPath to string
-    # Save the document in SVG format
-    doc.save(str(output_path), aw.SaveFormat.SVG)  
+    builder.insert_image(str(image_path))
+    doc.save(str(output_path), aw.SaveFormat.SVG)
 
 def convert_image_route(app):
     @app.route('/api/image_convertor', methods=['POST'])
@@ -52,10 +46,8 @@ def convert_image_route(app):
             output_path = STATIC_FOLDER / f'converted_{filename}.{output_format}'
             
             if output_format == 'svg':
-                # Convert image to SVG using Aspose.Words
                 convert_to_svg(UPLOAD_FOLDER / filename, output_path)
             else:
-                # Save the image in the desired format
                 image = Image.open(UPLOAD_FOLDER / filename)
                 image.save(output_path)
             
