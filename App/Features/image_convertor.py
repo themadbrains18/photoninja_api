@@ -22,10 +22,10 @@ def convert_to_svg(image_path, output_path):
     builder = aw.DocumentBuilder(doc)
 
     # Load the image into the document
-    builder.insert_image(image_path)
-
+    builder.insert_image(str(image_path))  # Convert WindowsPath to string
+    print(str(output_path), aw.SaveFormat.SVG,"aaalu")  # Convert WindowsPath to string
     # Save the document in SVG format
-    doc.save(output_path, aw.SaveFormat.SVG)
+    doc.save(str(output_path), aw.SaveFormat.SVG)  
 
 def convert_image_route(app):
     @app.route('/api/image_convertor', methods=['POST'])
