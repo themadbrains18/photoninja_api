@@ -27,12 +27,12 @@ from App.Features.profilepic_maker import profile_maker_routes  # Import profile
 app = Flask(__name__, static_url_path='/static', static_folder='static')
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')
 
-SECRET_KEY = "changeme"
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+# SECRET_KEY = "changeme"
+# app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 
-SESSION_TYPE = 'filesystem'
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-app.config['SESSION_COOKIE_SECURE'] = False
+# SESSION_TYPE = 'filesystem'
+# app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+# app.config['SESSION_COOKIE_SECURE'] = False
 
 app.config.from_object(__name__)
 
