@@ -1,5 +1,5 @@
 from PIL import Image, ImageFilter, ImageEnhance
-from flask import session, Flask, jsonify, request
+from flask import Flask, jsonify, request
 import os
 from datetime import datetime
 from werkzeug.utils import secure_filename
@@ -7,6 +7,9 @@ from flask_cors import cross_origin
 
 ALLOWED_EXTENSIONS = {'png', 'webp', 'jpg', 'jpeg', 'gif'}
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
+
+global_image = ""
+
 
 def timestampsWithFilename(filename):
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -41,11 +44,26 @@ def apply_cold(image):
     return image.convert("RGB")._new((int(0.7 * r), int(0.7 * g), b) for (r, g, b) in image.convert("RGB").getdata())
 
 def apply_warm(image):
-    return image.convert("RGB")._new((int(1.2 * r), g, b) for (r, g, b) in image.convert("RGB").getdata())
+    try:
+        # Convert image to RGB mode
+        rgb_image = image.convert("RGB")
+        
+        # Apply warm effect by increasing red channel intensity
+        warm_image = Image.new("RGB", rgb_image.size)
+        pixels = warm_image.load()
+        for i in range(rgb_image.size[0]):
+            for j in range(rgb_image.size[1]):
+                r, g, b = rgb_image.getpixel((i, j))
+                pixels[i, j] = (int(1.2 * r), g, b)  # Increase red channel intensity by 20%
+
+        return warm_image
+    except Exception as e:
+        print(f"Error applying warm filter: {e}")
+        return None
+
 
 def apply_pastel(image):
     return image.point(lambda p: p * 1.5)
-
 
 def apply_chrome(image):
     return apply_contrast(apply_color(image, 1.5), 1.5)
@@ -57,7 +75,7 @@ def apply_noir(image):
     return apply_contrast(image.convert("L"), 2.0)
 
 # Add your sepia filter implementation here
-def apply_warm(image):
+def apply_sepia(image):
     sepia_data = [
         (0.393, 0.769, 0.189),
         (0.349, 0.686, 0.168),
@@ -98,10 +116,8 @@ def apply_contrast(image, factor=1.5):
     enhancer = ImageEnhance.Contrast(image)
     return enhancer.enhance(factor)
 
-# def apply_rotate(image, angle=45):
-#     return image.rotate(angle)
-
 def apply_filter(file_path, filter_name):
+    global global_image  # Define global_image as a global variable
     original_image = Image.open(file_path)
 
     try:
@@ -123,6 +139,7 @@ def apply_filter(file_path, filter_name):
             'chrome': apply_chrome,
             'mono': apply_mono,
             'noir': apply_noir,
+            'sepia': apply_sepia
         }
 
         if filter_name in filter_functions:
@@ -133,8 +150,6 @@ def apply_filter(file_path, filter_name):
         filename = f"{secure_filename(file_path)}_{timestamp}_tmb.png"
         output_path = os.path.join('static', filename)  
         original_image.save(output_path)
-
-        session['applied-filter'] = output_path
         return output_path
     except Exception as e:
         print(f"Error applying filter: {e}")
@@ -145,27 +160,21 @@ def filter(app):
     @cross_origin(supports_credentials=True)
     def apply_filter_image():
         filter_name = request.form.get('filterName')
-        processed_image_path = session.get("imageFilter")
-
+        processed_image_path = global_image
+        print(processed_image_path, "============processed_image_path")
         if not processed_image_path or not os.path.exists(processed_image_path):
             return jsonify({'error': 'Invalid or missing image file'})
 
         output_path = apply_filter(processed_image_path, filter_name)
-        return jsonify({'filename': output_path})
         if output_path:
-            # Optionally, you can clean up the session or remove the original uploaded file
-            # del session['imageFilter']
-            # os.remove(processed_image_path)
             return jsonify({'filename': output_path})
         else:
             return jsonify({'error': 'Error applying filter'})
-        
-        
+
 def apply_filter_route(app):
     @app.route('/api/apply-filter', methods=['POST'])
     @cross_origin(supports_credentials=True)
     def apply_filter_api():
-        
         if 'file' not in request.files:
             return jsonify({'error': 'No file part'})
 
@@ -176,6 +185,5 @@ def apply_filter_route(app):
         # Save the uploaded file to the UPLOAD_FOLDER
         file_path = os.path.join(UPLOAD_FOLDER, secure_filename(file.filename))
         file.save(file_path)
-
-        session['imageFilter'] = file_path
-        return jsonify({'message': 'File uploaded successfully'})
+        global global_image # Define global_image as global variable
+        global_image = file_path 
