@@ -14,7 +14,7 @@ from datetime import timedelta
 
 
 from App.Features.bg_remove import bg_remove_route
-from App.Features.add_bg import add_bg_route
+from App.Features.bg_remove import add_bg_route
 from App.Features.apply_filters import apply_filter_route
 from App.Features.apply_filters import filter
 from App.Features.compress import compress_route
