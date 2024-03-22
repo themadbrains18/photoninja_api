@@ -14,25 +14,25 @@ from datetime import timedelta
 
 
 from App.Features.bg_remove import bg_remove_route
-from App.Features.add_bg import add_bg_route
+from App.Features.bg_remove import add_bg_route
 from App.Features.apply_filters import apply_filter_route
 from App.Features.apply_filters import filter
 from App.Features.compress import compress_route
 from App.Features.compress import compressing
 from App.Features.enhance import image_enhance_route
-from App.Features.image_convertor import image_convertor_route
+from App.Features.image_convertor import convert_image_route
 
 from App.Features.profilepic_maker import profile_maker_routes  # Import profile_maker function
 
 app = Flask(__name__, static_url_path='/static', static_folder='static')
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')
 
-SECRET_KEY = "changeme"
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
+# SECRET_KEY = "changeme"
+# app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)
 
-SESSION_TYPE = 'filesystem'
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
-app.config['SESSION_COOKIE_SECURE'] = False
+# SESSION_TYPE = 'filesystem'
+# app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+# app.config['SESSION_COOKIE_SECURE'] = False
 
 app.config.from_object(__name__)
 
@@ -59,7 +59,7 @@ filter(app)
 compress_route(app)
 compressing(app)
 image_enhance_route(app)
-image_convertor_route(app)
+convert_image_route(app)
 
 # Integrate profile_maker functionality into the Flask application
 profile_maker_routes(app)

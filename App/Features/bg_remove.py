@@ -1,17 +1,16 @@
 # bg_remover.py
+
+import os
+from flask import Flask, jsonify, request, send_file
 from PIL import Image
 from rembg import remove
 import numpy as np
-from flask import session
 from werkzeug.utils import secure_filename
 from datetime import datetime
-from flask import Flask, jsonify, request
-import os
 from flask_cors import cross_origin
 
-
 ALLOWED_EXTENSIONS = {'png', 'webp', 'jpg', 'jpeg', 'gif'}
-UPLOAD_FOLDER = os.path.join(os.getcwd() ,'uploads')
+UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -34,9 +33,8 @@ def removeBackground(file):
 
     output_path = timestampsWithFilename(filename)
     bgRemovedAndSaveImage(file_path, output_path, alpha_matting=True)
-    session['bg_removed_img'] = output_path
 
-    return output_path
+    return output_path  # Return the path of the background removed image
 
 def bg_remove_route(app):
     @app.route('/api/bg-remove', methods=['POST'])
@@ -51,6 +49,30 @@ def bg_remove_route(app):
                 return jsonify({'error': 'Invalid file'})
 
             output_path = removeBackground(file)
-            return jsonify({'filename': output_path})
+            return jsonify({'filename': output_path})  # Return the path of the background removed image
 
         return jsonify({'error': 'Invalid request'})
+
+    return app
+
+def add_bg_route(app):
+    @app.route('/api/add-bg', methods=['POST'])
+    @cross_origin(supports_credentials=True)
+    def apply_background():
+        background_color = request.form.get('background_color')
+        processed_image_path = request.form.get('processed_image_path')
+        if processed_image_path:
+            original_image = Image.open(processed_image_path)
+
+            # Apply background color if provided
+            if background_color:
+                new_bg_image = Image.new('RGB', original_image.size, color=background_color)
+                original_image = Image.alpha_composite(new_bg_image.convert('RGBA'), original_image.convert('RGBA'))
+
+            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+            output_path = f"{processed_image_path}_{timestamp}_tmb.png"
+            original_image.save(output_path)
+
+            return jsonify({'filename': output_path})
+
+        return jsonify({'error': 'Processed image not provided'})
