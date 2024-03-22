@@ -79,4 +79,5 @@ delete_old_files(os.path.join(os.getcwd(), 'static'))
 delete_old_files(os.path.join(os.getcwd(), 'uploads'))
 
 if __name__ == '__main__':
-    app.run(debug=True, port="7001", host="0.0.0.0")
+    context = ('/etc/nginx/certificate/nginx-certificate.crt', '/etc/nginx/certificate/nginx.key') #certificate and key files
+    app.run(debug=True, port="5000", host="0.0.0.0",ssl_context=context)
