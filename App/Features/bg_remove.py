@@ -1,4 +1,4 @@
-# bg_remover.py
+# bg_remove.py
 
 import os
 from flask import Flask, jsonify, request, send_file

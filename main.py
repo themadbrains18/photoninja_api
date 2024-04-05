@@ -6,7 +6,6 @@ import os
 import secrets
 from datetime import datetime, timedelta
 import glob
-import redis
 from datetime import timedelta
 
 
@@ -21,8 +20,7 @@ from App.Features.compress import compress_route
 from App.Features.compress import compressing
 from App.Features.enhance import image_enhance_route
 from App.Features.image_convertor import convert_image_route
-
-from App.Features.profilepic_maker import profile_maker_routes  # Import profile_maker function
+from App.Features.profilepic_maker import profile_maker_routes 
 
 app = Flask(__name__, static_url_path='/static', static_folder='static')
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')
@@ -60,8 +58,6 @@ compress_route(app)
 compressing(app)
 image_enhance_route(app)
 convert_image_route(app)
-
-# Integrate profile_maker functionality into the Flask application
 profile_maker_routes(app)
 
 def delete_old_files(folder_path, max_age_hours=1):
@@ -80,4 +76,4 @@ delete_old_files(os.path.join(os.getcwd(), 'uploads'))
 
 if __name__ == '__main__':
     context = ('/etc/nginx/certificate/nginx-certificate.crt', '/etc/nginx/certificate/nginx.key') #certificate and key files
-    app.run(debug=True, port="5000", host="0.0.0.0",ssl_context=context)
+    app.run(debug=True, port="7001", host="0.0.0.0")

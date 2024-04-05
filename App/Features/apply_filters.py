@@ -1,3 +1,4 @@
+# apply_filter.py
 from PIL import Image, ImageFilter, ImageEnhance, ImageDraw
 from flask import Flask, jsonify, request
 import os
@@ -193,7 +194,6 @@ def apply_filter(file_path, filter_name):
     except Exception as e:
         print(f"Error applying filter: {e}")
         return None
-
 
 
 
